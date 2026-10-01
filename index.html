@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real-Time Sync App</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 500px; margin: auto; }
+    input, button { font-size: 1rem; padding: 0.5rem; margin-top: 0.5rem; width: 100%; box-sizing: border-box; }
+    #output { background: #f4f4f4; padding: 1rem; margin-top: 1rem; border-radius: 4px; min-height: 40px; }
+  </style>
+</head>
+<body>
+
+  <h2>Real-Time Device Sync</h2>
+  <input type="text" id="userInput" placeholder="Type something on any device..." />
+  <button id="sendBtn">Sync Across Devices</button>
+
+  <h3>Live Output:</h3>
+  <div id="output">Waiting for updates...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Paste your Firebase Config object here
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvzZ5CAxJENd3aoWytKjXlERP1avdJd8c",
+      authDomain: "pstvns-f692c.firebaseapp.com",
+      databaseURL: "https://pstvns-f692c-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "pstvns-f692c",
+      storageBucket: "pstvns-f692c.firebasestorage.app",
+      messagingSenderId: "966521925997",
+      appId: "1:966521925997:web:5cc3f59ceb57245b58aa64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const syncRef = ref(database, 'sharedState/message');
+
+    const input = document.getElementById('userInput');
+    const button = document.getElementById('sendBtn');
+    const output = document.getElementById('output');
+
+    button.addEventListener('click', () => {
+      set(syncRef, input.value);
+      input.value = '';
+    });
+
+    onValue(syncRef, (snapshot) => {
+      const data = snapshot.val();
+      output.textContent = data !== null ? data : "No data synced yet.";
+    });
+  </script>
+</body>
+</html>
